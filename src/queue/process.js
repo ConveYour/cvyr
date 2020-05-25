@@ -22,12 +22,20 @@ const getBatch = config => {
     let batchSize = q.batchSize || 25
 
     let batch = {
+      inQueue : 0,
+      inBatch : 0,
       files : [],
-      data : []
+      data : [],
+      response : {}
     }
 
     fs.readdir(q.path, (err, files) => {
-      files.slice(0, batchSize).forEach( file => {
+      batch.inQueue = files.length
+
+      let fileBatch =  files.slice(0, batchSize)
+      batch.inBatch = fileBatch.length
+
+      fileBatch.forEach( file => {
         let path = q.path + '/' + file
         let traits = getJSON( path )
         let id = traits.id
@@ -35,8 +43,6 @@ const getBatch = config => {
           return console.log('no id', traits)
         }
         delete traits.id
-
-        console.log(traits)
 
         batch.files.push(path)
         batch.data.push({ id, traits })
@@ -49,7 +55,8 @@ const getBatch = config => {
 }
 
 const cleanup = batch => {
-  batch.files.forEach( file => {
+  let files = batch.files
+  files.forEach( file => {
     fs.unlink(file, err => {
       if( err ){
         console.log(err)
@@ -77,7 +84,7 @@ module.exports = async config => {
   let batch = await getBatch( config )
 
   if( !batch.data.length ){
-    console.log('batch is empty');
+    console.log('batch empty');
     return true;
   }
 
@@ -91,10 +98,14 @@ module.exports = async config => {
     }
   })
   .then( res  => {
-    console.log(res.data)
+    batch.response = res.data
     if( res.data && res.data.status === 'ok'){
       cleanup(batch)
     }
+    delete batch.files
+    batch.sample = batch.data.slice(0, 3)
+    delete batch.data
+    console.log(batch)
   })
 
 }
