@@ -105,7 +105,7 @@ module.exports = async config => {
     delete batch.files
     batch.sample = batch.data.slice(0, 3)
     delete batch.data
-    console.log(batch)
+    console.log(JSON.stringify(batch, null, 2))
   })
 
 }
