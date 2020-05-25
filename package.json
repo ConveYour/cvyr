@@ -1,0 +1,18 @@
+{
+  "name": "cvyr",
+  "version": "1.0.0",
+  "description": "CLI Tools for Interacting with your ConveYour Account",
+  "main": "index.js",
+  "scripts": {
+    "cy": "node index.js"
+  },
+  "author": "Stephen Rhyne",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.19.2",
+    "commander": "^5.1.0",
+    "csv-parser": "^2.3.2",
+    "dotenv": "^8.2.0",
+    "uuid": "^8.1.0"
+  }
+}
