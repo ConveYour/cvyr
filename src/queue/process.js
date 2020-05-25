@@ -76,6 +76,11 @@ module.exports = async config => {
 
   let batch = await getBatch( config )
 
+  if( !batch.data.length ){
+    console.log('batch is empty');
+    return true;
+  }
+
   axios({
     method : 'post',
     url : acc.url + '/api/analytics/identify',
