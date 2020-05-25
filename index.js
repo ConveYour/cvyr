@@ -1,5 +1,4 @@
 const env = require('dotenv').config()
-console.log(env)
 const config = require('./config')
 const { program } = require('commander')
 const queueCSV = require('./src/csv/queue')
