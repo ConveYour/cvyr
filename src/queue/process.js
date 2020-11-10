@@ -65,6 +65,10 @@ const cleanup = batch => {
   })
 }
 
+const log = msg => {
+  console.log( new Date() + ' ' + msg )
+}
+
 module.exports = async config => {
 
   let acc = config.account
@@ -77,14 +81,14 @@ module.exports = async config => {
   let token = process.env[ acc.token ]
 
   if( !appKey || !token ){
-    console.log(`Missing ${acc.appKey} or ${ acc.token } in .env`)
+    log(`Missing ${acc.appKey} or ${ acc.token } in .env`)
     return false
   }
 
   let batch = await getBatch( config )
 
   if( !batch.data.length ){
-    console.log('batch empty');
+    log('batch empty');
     return true;
   }
 
@@ -105,7 +109,7 @@ module.exports = async config => {
     delete batch.files
     batch.sample = batch.data.slice(0, 3)
     delete batch.data
-    console.log(JSON.stringify(batch, null, 2))
+    log(JSON.stringify(batch, null, 2))
   })
 
 }
