@@ -49,6 +49,6 @@ module.exports = config => {
 
      let path = `${qPath}/${id}.json`
      console.log(`${path}`);
-     // fs.writeFileSync(path,  reducedJSON ) 
+     fs.writeFileSync(path,  reducedJSON ) 
     })
 }
