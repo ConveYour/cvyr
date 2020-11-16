@@ -25,7 +25,13 @@ module.exports = config => {
        m(data, reduced)
      })
 
-     id = reduced.id
+     let id = reduced.id
+
+     if( reduced.cvyr_id ){
+       id = reduced.cvyr_id
+       delete reduced.cvyr_id
+     }
+
      if( !id ){
        return console.log('no id', reduced);
      }
