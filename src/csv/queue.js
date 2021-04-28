@@ -1,60 +1,20 @@
-const fieldMapper = require('./fieldMapper')
 const csv = require('csv-parser')
 const fs = require('fs')
+const inserter = require('../queue/inserter')
 
 
 module.exports = config => {
-  let c = config.csv
-  let mapper = fieldMapper(c.fieldMap)
 
-  let file = c.fromFile
-  let qPath = config.queue.path
+  let file = config.csv.fromFile
 
-  let cachePath = ''
-  if( config.cache ){
-    if( config.cache.enabled && config.cache.path ){
-      cachePath = config.cache.path
-    }
-  }
+  //inserter wants a common fieldMap, it doesn't concern itself with integration origin
+  config.fieldMap = config.csv.fieldMap
+
+  const insert = inserter(config)
+  
+  console.log(insert)
 
   fs.createReadStream(file)
     .pipe( csv() )
-    .on('data', async data => {
-     let reduced = {}
-     mapper.forEach( m => {
-       m(data, reduced)
-     })
-
-     let id = reduced.id
-
-     if( reduced.cvyr_id ){
-       id = reduced.cvyr_id
-       delete reduced.cvyr_id
-     }
-
-     if( !id ){
-       return console.log('no id', reduced);
-     }
-
-     let reducedJSON = JSON.stringify(reduced)
-
-     if( cachePath ){
-       let _cachePath = `${cachePath}/${id}.json`
-
-       let cached = '{}'
-
-       if( fs.existsSync(_cachePath) ){
-         cached =  fs.readFileSync(_cachePath, 'utf-8')
-       }
-
-       if( cached === reducedJSON ){
-         return console.log(`skipping ${_cachePath}`);
-       }
-       fs.writeFileSync(_cachePath, reducedJSON)
-     }
-
-     let path = `${qPath}/${id}.json`
-     console.log(`${path}`);
-     fs.writeFileSync(path,  reducedJSON ) 
-    })
+    .on('data', insert)
 }
