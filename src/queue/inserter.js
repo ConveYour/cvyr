@@ -1,6 +1,6 @@
 const fieldMapper = require('./fieldMapper')
 const fs = require('fs')
-module.exports = config => {
+module.exports = (config, log = {}) => {
   
   let mapper = fieldMapper(config.fieldMap)
   let qPath = config.queue.path
@@ -11,6 +11,10 @@ module.exports = config => {
       cachePath = config.cache.path
     }
   }
+
+  log.errorCount = 0
+  log.cachedHitCount = 0
+  log.insertedCount = 0
 
   return async data => {
     let reduced = {}
@@ -27,9 +31,12 @@ module.exports = config => {
     }
 
     if (!id) {
+      log.errorCount++
       return console.log('no id', reduced);
     }
 
+    log.sample = reduced
+    
     let reducedJSON = JSON.stringify(reduced)
 
     if (cachePath) {
@@ -42,14 +49,18 @@ module.exports = config => {
       }
 
       if (cached === reducedJSON) {
-        return console.log(`skipping ${_cachePath}`);
+        log.cachedHitCount++
+        return
       }
+
       fs.writeFileSync(_cachePath, reducedJSON)
     }
 
     let path = `${qPath}/${id}.json`
-    console.log(`${path}`);
     fs.writeFileSync(path, reducedJSON)
+
+    
+    log.insertedCount++
   }
 
 }

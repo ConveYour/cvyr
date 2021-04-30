@@ -5,18 +5,26 @@ module.exports = fieldMap => {
 
     if( v === true ){
       map.push( ( data, reduced ) => {
-        reduced[k] = data[k]
+        if( data[k] !== undefined ){
+          reduced[k] = data[k]
+        }
       })
     }
 
     else if( typeof v === 'function' ){
       map.push( (data, reduced) => {
-        reduced[k] = v(data[k], data)
+        let compiled = v(data[k], data)
+        if( compiled !== undefined ){
+          reduced[k] = compiled
+        }
+        
       })
     }
     else if( typeof v === 'string' ){
       map.push( (data, reduced) => {
-        reduced[k] = data[v]
+        if( data[v] !== undefined ){
+          reduced[k] = data[v]
+        }
       })
     }
   }

@@ -9,11 +9,14 @@ module.exports = async config => {
   const res = await api().get('employees/directory')
   const list = res.data.employees
   
-
   config.fieldMap = config.bamboohr.fieldMap
-  const insert = inserter(config)
+  const log = {}
+  const insert = inserter(config, log)
   
   list.forEach( data => {
     insert(data)
   })
+
+  return log
+  
 }

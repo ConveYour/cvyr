@@ -10,11 +10,16 @@ module.exports = config => {
   //inserter wants a common fieldMap, it doesn't concern itself with integration origin
   config.fieldMap = config.csv.fieldMap
 
-  const insert = inserter(config)
+  const log = {}
+  const insert = inserter(config, log)
   
-  console.log(insert)
-
-  fs.createReadStream(file)
-    .pipe( csv() )
-    .on('data', insert)
+  return new Promise( resolve => {
+    fs.createReadStream(file)
+      .pipe(csv())
+      .on('data', insert)
+      .on('end', () => {
+        resolve( log )
+      })
+  })
+  
 }
