@@ -9,7 +9,7 @@
   "author": "Stephen Rhyne",
   "license": "ISC",
   "dependencies": {
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "commander": "^5.1.0",
     "csv-parser": "^2.3.2",
     "dotenv": "^8.2.0",
