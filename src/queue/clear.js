@@ -24,10 +24,10 @@ module.exports = async config => {
   
   let res = {}
 
-  if( config.cache.path ){
+  if( config.cache && config.cache.path ){
     res.cacheCount = await clearFolder(config.cache.path)
   }
-  if( config.queue.path ){
+  if( config.queue && config.queue.path ){
     res.queueCount = await clearFolder(config.queue.path)
   }
   
