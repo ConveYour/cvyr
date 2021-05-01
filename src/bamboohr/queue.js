@@ -4,14 +4,18 @@ const asyncForEach = require('../helpers/asyncForEach')
 const chunkArray = require('../helpers/chunkArray')
 const cliProgress = require('cli-progress');
 
-module.exports = async config => {
+module.exports = async ( config, opts ) => {
   if( !config.bamboohr ){
     return console.error('Missing config.bamboohr = { fieldMap, fields, ... }')
   }
 
   //get all employees from directory
   const res = await api().get('employees/directory')
-  const list = res.data.employees
+  let list = res.data.employees
+  
+  if( opts.limit ){
+    list = list.slice(0, opts.limit)
+  }
   
   //make sure fieldMap is setup to pass to inserter
   config.fieldMap = config.bamboohr.fieldMap

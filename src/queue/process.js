@@ -1,5 +1,7 @@
 const fs = require('fs')
 const axios = require('axios')
+const cyapi = require('../conveyour/api')
+const createCSV = require('../csv/create')
 
 const getJSON = path => {
   try{
@@ -11,15 +13,14 @@ const getJSON = path => {
   }
 }
 
-const getBatch = config => {
+const getBatch = opts => {
   return new Promise( (resolve, reject) => {
 
-    let q = config.queue
-    if( !q.path ){
+    if( !opts.path ){
       return reject('config.queue.path not set!')
     }
 
-    let batchSize = q.batchSize || 25
+    let batchSize = opts.batchSize || 25
 
     let batch = {
       inQueue : 0,
@@ -29,14 +30,14 @@ const getBatch = config => {
       response : {}
     }
 
-    fs.readdir(q.path, (err, files) => {
+    fs.readdir(opts.path, (err, files) => {
       batch.inQueue = files.length
 
       let fileBatch =  files.slice(0, batchSize)
       batch.inBatch = fileBatch.length
 
       fileBatch.forEach( file => {
-        let path = q.path + '/' + file
+        let path = opts.path + '/' + file
         let traits = getJSON( path )
         let id = traits.id
         if( !id ){
@@ -69,7 +70,7 @@ const log = msg => {
   console.log( new Date() + ' ' + msg )
 }
 
-module.exports = async config => {
+module.exports = async ( config, opts ) => {
 
   let acc = config.account
   if( !acc.url ){
@@ -85,31 +86,38 @@ module.exports = async config => {
     return false
   }
 
-  let batch = await getBatch( config )
+  let batch = await getBatch({
+    path: config.queue.path,
+    batchSize: opts.batch || config.queue.batchSize
+  })
 
   if( !batch.data.length ){
     log('batch empty');
     return true;
   }
 
-  axios({
-    method : 'post',
-    url : acc.url + '/api/analytics/identify',
-    data : batch.data,
-    headers: {
-      'x-conveyour-appkey' : appKey,
-      'x-conveyour-token' : token
-    }
-  })
-  .then( res  => {
-    batch.response = res.data
-    if( res.data && res.data.status === 'ok'){
+  let res = null
+  let success = false
+  if( opts.to && opts.to.match(/\.csv$/) ){
+    console.log(opts)
+    res = await createCSV( batch.data, opts.to )
+    success = !!res
+  }
+  else{
+    res = await cyapi().post('analytics/identify', { data : batch.data })
+    success = res.data && res.data.status === 'ok'
+    if( success ){
       cleanup(batch)
     }
-    delete batch.files
-    batch.sample = batch.data.slice(0, 3)
-    delete batch.data
-    log(JSON.stringify(batch, null, 2))
-  })
+  }
 
+  if( !success ){
+    return false
+  }
+
+  delete batch.files
+  batch.sample = batch.data.slice(0, 3)
+  delete batch.data
+
+  return batch
 }

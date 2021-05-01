@@ -1,7 +1,8 @@
 const axios = require('axios')
-module.exports = () => {
-   const key = process.env[ 'BAMBOOHR_APIKEY' ] || ''
-   const domain = process.env[ 'BAMBOOHR_DOMAIN' ] || ''
+module.exports = ( opts = {} ) => {
+
+   const key = opts.key || process.env[ 'BAMBOOHR_APIKEY' ] || ''
+   const domain = opts.key || process.env[ 'BAMBOOHR_DOMAIN' ] || ''
 
    const config = {
      baseURL : `https://api.bamboohr.com/api/gateway.php/${domain}/v1`,
