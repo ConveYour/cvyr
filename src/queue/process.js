@@ -3,16 +3,7 @@ const axios = require('axios')
 const cyapi = require('../conveyour/api')
 const createCSV = require('../csv/create')
 const log = require('../helpers/log')
-
-const getJSON = path => {
-  try{
-    let data = fs.readFileSync(path).toString()
-    return JSON.parse( data )
-  }
-  catch( e ){
-    return false
-  }
-}
+const getJSON = require('../helpers/getJSON.js')
 
 const getBatch = opts => {
   return new Promise( (resolve, reject) => {

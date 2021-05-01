@@ -7,6 +7,7 @@ const queueProcess = require('./src/queue/process')
 const queueBambooHR = require('./src/bamboohr/queue' )
 const clearQueue = require('./src/queue/clear')
 const queueStats = require('./src/queue/stats')
+const queueSearch = require('./src/queue/search')
 
 let tasks = [
   {
@@ -41,6 +42,14 @@ let tasks = [
     cmd: 'queue-stats',
     desc: 'get stats on queue and queue cache',
     run: queueStats
+  },
+  {
+    cmd: 'queue-search',
+    desc: 'search the queue and cache for any value',
+    run: queueSearch,
+    options: [
+      [ '-q, --query <value>', "search cache and queue. Example: john, 'field1=value&field2=value'"],
+    ]
   }
 ]
 
