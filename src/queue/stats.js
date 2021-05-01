@@ -11,10 +11,10 @@ module.exports = async config => {
   
   let queue = {}
 
-  if (config.cache.path) {
+  if (config.cache && config.cache.path) {
     queue.cacheCount = await fileCount(config.cache.path)
   }
-  if (config.queue.path) {
+  if (config.queue && config.queue.path) {
     queue.queueCount = await fileCount(config.queue.path)
   }
 
