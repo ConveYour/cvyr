@@ -2,8 +2,6 @@ const axios = require('axios')
 
 module.exports = ( opts = {} ) => {
 
-  console.log(opts)
-
   const baseURL = (opts.baseURL || '').replace(/\/$/, '') + '/api'
 
   const appKey = opts.appKey || process.env['CONVEYOUR_APPKEY'] || ''
@@ -17,6 +15,8 @@ module.exports = ( opts = {} ) => {
       'x-conveyour-token': token
     }
   }
+
+  console.log({ config })
 
   return axios.create(config)
 

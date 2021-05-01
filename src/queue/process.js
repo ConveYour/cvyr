@@ -2,6 +2,7 @@ const fs = require('fs')
 const axios = require('axios')
 const cyapi = require('../conveyour/api')
 const createCSV = require('../csv/create')
+const log = require('../helpers/log')
 
 const getJSON = path => {
   try{
@@ -66,25 +67,7 @@ const cleanup = batch => {
   })
 }
 
-const log = msg => {
-  console.log( new Date() + ' ' + msg )
-}
-
 module.exports = async ( config, opts ) => {
-
-  let acc = config.account
-  if( !acc.url ){
-    console.log('missing account url')
-    return false
-  }
-
-  let appKey = process.env[ acc.appKey ]
-  let token = process.env[ acc.token ]
-
-  if( !appKey || !token ){
-    log(`Missing ${acc.appKey} or ${ acc.token } in .env`)
-    return false
-  }
 
   let batch = await getBatch({
     path: config.queue.path,
@@ -99,12 +82,38 @@ module.exports = async ( config, opts ) => {
   let res = null
   let success = false
   if( opts.to && opts.to.match(/\.csv$/) ){
-    console.log(opts)
     res = await createCSV( batch.data, opts.to )
     success = !!res
   }
   else{
-    res = await cyapi().post('analytics/identify', { data : batch.data })
+    let acc = config.account
+    if (!acc.url) {
+      console.log('missing account url')
+      return false
+    }
+
+    let appKey = process.env[acc.appKey]
+    let token = process.env[acc.token]
+
+    if (!appKey || !token) {
+      log(`Missing ${acc.appKey} or ${acc.token} in .env`)
+      return false
+    }
+    
+    let options = {
+      baseURL : acc.url,
+      appKey,
+      token
+    }
+
+    if( opts.debug ){
+      log({ batch : batch.data })
+    }
+
+    res = await cyapi(options).post('analytics/identify', { data : batch.data })
+    if( opts.debug ){
+      log(res.data)
+    }
     success = res.data && res.data.status === 'ok'
     if( success ){
       cleanup(batch)

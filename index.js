@@ -1,3 +1,4 @@
+const log = require('./src/helpers/log')
 const env = require('dotenv').config()
 const config = require('./config')
 const { program } = require('commander')
@@ -33,6 +34,7 @@ let tasks = [
     options: [
       [ '-t, --to <type>', 'Where to send processed records to', 'ConveYour'],
       [ '-b, --batch <number>', 'Batch Size'],
+      [ '-d, --debug', 'Turn on debug output'],
     ]
   },
   {
@@ -54,12 +56,8 @@ tasks.forEach( task => {
   }
 
   p.action( async (options) => {
-
     let res = await task.run(config, options)
-    if( res ){
-      console.log(res)
-    }
-
+    log(res)
   })
 
 })
