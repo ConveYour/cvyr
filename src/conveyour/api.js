@@ -16,8 +16,6 @@ module.exports = ( opts = {} ) => {
     }
   }
 
-  console.log({ config })
-
   return axios.create(config)
 
 }

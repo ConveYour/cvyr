@@ -110,7 +110,7 @@ module.exports = async ( config, opts ) => {
       log({ batch : batch.data })
     }
 
-    res = await cyapi(options).post('analytics/identify', { data : batch.data })
+    res = await cyapi(options).post('analytics/identify', batch.data )
     if( opts.debug ){
       log(res.data)
     }
