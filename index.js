@@ -9,6 +9,8 @@ const clearQueue = require('./src/queue/clear')
 const queueStats = require('./src/queue/stats')
 const queueSearch = require('./src/queue/search')
 
+const debug = ['-d, --debug', 'Turn on debug output']
+
 let tasks = [
   {
     cmd: 'queue-csv',
@@ -21,6 +23,7 @@ let tasks = [
     run: queueBambooHR,
     options: [
       ['-l, --limit <number>', 'Limit the number of queued records' ],
+      debug,
     ]
   },
   {
@@ -35,7 +38,7 @@ let tasks = [
     options: [
       [ '-t, --to <type>', 'Where to send processed records to', 'ConveYour'],
       [ '-b, --batch <number>', 'Batch Size'],
-      [ '-d, --debug', 'Turn on debug output'],
+      debug,
     ]
   },
   {

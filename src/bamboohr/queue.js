@@ -19,6 +19,15 @@ module.exports = async ( config, opts ) => {
   
   //make sure fieldMap is setup to pass to inserter
   config.fieldMap = config.bamboohr.fieldMap
+  const recordFilter = config.bamboohr.filter
+  if( recordFilter ){
+    config.filter = recordFilter
+    if( opts.debug ){
+      console.log('filter:', config.filter.toString() )
+    }
+  }
+
+
   //log is passed by reference and then returned later
   const log = {}
   const insert = inserter(config, log)

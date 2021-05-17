@@ -16,6 +16,8 @@ module.exports = (config, log = {}) => {
   log.cachedHitCount = 0
   log.insertedCount = 0
 
+  const filter = (typeof config.filter === 'function') ? config.filter : record => record
+
   return async data => {
     let reduced = {}
 
@@ -36,6 +38,10 @@ module.exports = (config, log = {}) => {
     }
 
     log.sample = reduced
+
+    if( !filter(reduced) ){
+      return false
+    }
     
     let reducedJSON = JSON.stringify(reduced)
 
