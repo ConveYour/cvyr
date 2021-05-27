@@ -9,21 +9,34 @@ const clearQueue = require('./src/queue/clear')
 const queueStats = require('./src/queue/stats')
 const queueSearch = require('./src/queue/search')
 
+const parseInt = value => {
+  return value ? +value : 0
+}
+
+const limit = ['-l, --limit <number>', 'Limit the number of queued records', parseInt]
+const dryRun = ['-d, --dry', 'Do dry run! Does not write data. Use to test fieldMap']
 const debug = ['-d, --debug', 'Turn on debug output']
+
 
 let tasks = [
   {
     cmd: 'queue-csv',
     desc: 'process csv and insert rows into queue',
-    run: queueCSV
+    run: queueCSV,
+    options: [
+      limit,
+      debug,
+      dryRun      
+    ]
   },
   {
     cmd: 'queue-bamboohr',
     desc: 'insert employee directory into queue',
     run: queueBambooHR,
     options: [
-      ['-l, --limit <number>', 'Limit the number of queued records' ],
+      limit,
       debug,
+      dryRun
     ]
   },
   {
