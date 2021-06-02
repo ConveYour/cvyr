@@ -27,6 +27,7 @@ module.exports = async ( config, opts ) => {
     }
   }
 
+  config.dryRun = opts.dry
 
   //log is passed by reference and then returned later
   const log = {}
